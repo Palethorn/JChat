@@ -9,8 +9,9 @@ public class Server extends ServerSocket {
 	Client socket;
 	ArrayList<Client> connections;
 	int id;
-	public Server(int port) throws IOException {
-		super(port, 5, InetAddress.getLocalHost());
+	public Server(String address,int port) throws IOException {
+		super();
+		this.bind(new InetSocketAddress(address, port));
 		connections = new ArrayList<Client>();
 		System.out.println("Server started:\n" + this.getInetAddress() + ":"
 				+ this.getLocalPort());

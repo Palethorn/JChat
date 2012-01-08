@@ -17,7 +17,6 @@ public class Client extends Socket {
 				+ this.getInetAddress() + ":" + this.getPort() + "\n");
 		if(!this.acquireStreams())
 		{
-			//while(sendMessage());
 			System.exit(-1);
 		}
 	}
@@ -30,23 +29,6 @@ public class Client extends Socket {
 			System.exit(-1);
 		}
 	}
-	/*public boolean sendMessage()
-	{
-		try {
-			textInput = console.readLine();
-			output.writeUTF(textInput);
-		} catch (IOException e) {
-			System.out.println("Cannot send message!");
-			return false;
-		}
-		try {
-			System.out.println(input.readUTF());
-			return true;
-		} catch (IOException e) {
-			System.out.println("Cannot read message");
-			return false;
-		}
-	}*/
 	public boolean acquireStreams() {
 		try {
 			input = new DataInputStream(this.getInputStream());
