@@ -7,7 +7,7 @@ public class ChatClient
 
     public static void main(String [] args)
     {
-        try
+        /*try
         {
             if(args.length > 1)
             {
@@ -28,6 +28,11 @@ public class ChatClient
             System.out.println("Couldn't connect.\n");
             e.printStackTrace();
             System.exit(-1);
-        }
+        }*/
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new MainWindow();
+            }
+        });
     }
 }
