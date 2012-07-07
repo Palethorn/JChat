@@ -1,9 +1,10 @@
+package app.ChatServer;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.w3c.dom.Document;
+import nu.xom.*;
 
 public class Server extends ServerSocket
 {
@@ -11,8 +12,6 @@ public class Server extends ServerSocket
     PrintStream output;
     ClientWorker w;
     Client socket;
-    String root;
-    Dom dom;
     Document users;
     Hashtable<Integer, Client> usersTable;
     ArrayList<Client> connections;
@@ -29,6 +28,7 @@ public class Server extends ServerSocket
                 + this.getLocalPort());
         id = 0;
         printCommands();
+        setUsersList();
         startConnections();
     }
     public void printCommands()
@@ -38,9 +38,9 @@ public class Server extends ServerSocket
     }
     public void setUsersList()
     {
-        dom = new Dom();
-        root = new String("<users></users>");
-        dom.prepareDoc(root);
+        Element root = new Element("users");
+        root.addAttribute(new Attribute("status", "ok"));
+        users = new Document(root);
         usersTable = new Hashtable<Integer, Client>();
     }
     public void setCommandInterface()

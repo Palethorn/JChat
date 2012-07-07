@@ -1,12 +1,11 @@
+package app.ChatServer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Hashtable;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import nu.xom.*;
 
 public class Client
 {
@@ -17,24 +16,28 @@ public class Client
     private Hashtable<Integer, Client> usersTable;
     private DataInputStream input;
     private DataOutputStream output;
-    private Dom dom;
+    private Builder parser;
+    Singleton singleton;
     public Client(Socket client, Document users, Integer id,
             Hashtable<Integer, Client> usersTable)
     {
+        singleton = Singleton.getInstance();
         this.socket = client;
         this.users = users;
         this.usersTable = usersTable;
         this.id = id;
-        dom = new Dom();
+        parser = new Builder();
         try
         {
             input = new DataInputStream(this.socket.getInputStream());
             output = new DataOutputStream(this.socket.getOutputStream());
+            readHeader();
         }
         catch(IOException e)
         {
             System.out.println("Failed retrieving streams.\n");
         }
+        
     }
 
     public void closeBuffer()
@@ -55,9 +58,27 @@ public class Client
         try
         {
             String header = input.readUTF();
-            dom.prepareDoc(header);
-            username = dom.attributeValue("user", "username").get(0);
-            dom.addNode(users, "user", id.toString(), username);
+            try
+            {
+                Document req = parser.build(header, null);
+                Element root = req.getRootElement();
+                Element user = root.getFirstChildElement("user");
+                username = user.getValue();
+                Element newUser = new Element("user");
+                newUser.addAttribute(new Attribute("id", id.toString()));
+                newUser.appendChild(username);
+                users.getRootElement().appendChild(newUser);
+                System.out.println(users.toXML());
+                this.sendUserList();
+            }
+            catch(ValidityException e)
+            {
+                singleton.errorMessage("String is malformed");
+            }
+            catch(ParsingException e)
+            {
+                singleton.errorMessage("Unable to parse document");
+            }
         }
         catch(IOException e)
         {
@@ -68,7 +89,7 @@ public class Client
     {
         try
         {
-            output.writeUTF(users.toString());
+            output.writeUTF(users.toXML());
         }
         catch(IOException e)
         {
@@ -79,11 +100,9 @@ public class Client
         try
         {
             String message = this.input.readUTF();
-            dom.prepareDoc(message);
-            Node nl = dom.byTag("message").item(0);
-            Integer to = Integer.parseInt(((Element)nl).getAttribute("to"));
-            Client receiver = usersTable.get(to);
-            receiver.sendMessage(message);
+            Document mess = parser.build(message, null);
+            Element root = mess.getRootElement();
+            usersTable.get(Integer.parseInt(root.getAttribute("to").getValue())).sendMessage(message);
         }
         catch(Exception e)
         {

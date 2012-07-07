@@ -1,3 +1,4 @@
+package app.ChatServer;
 class ClientWorker implements Runnable
 {
     Client client;

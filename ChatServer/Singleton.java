@@ -1,3 +1,4 @@
+package app.ChatServer;
 class Singleton
 {
     private static Singleton instance;
@@ -5,12 +6,16 @@ class Singleton
     {
         
     }
-    public Singleton getInstance()
+    public static Singleton getInstance()
     {
         if(instance == null)
         {
             instance = new Singleton();
         }
         return instance;
+    }
+    public void errorMessage(String message)
+    {
+        System.out.println(message);
     }
 }

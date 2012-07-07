@@ -1,3 +1,4 @@
+package app.ChatServer;
 import java.io.IOException;
 
 public class ChatServer
@@ -6,11 +7,12 @@ public class ChatServer
 
     public static void main(String [] args)
     {
+        String [] params = {"100.200.1.2", "22222"};
         try
         {
-            if(args.length > 1)
+            if(params.length > 1)
             {
-                server = new Server(args[0], Integer.parseInt(args[1]));
+                server = new Server(params[0], Integer.parseInt(params[1]));
             }
             else
             {
